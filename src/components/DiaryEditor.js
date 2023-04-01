@@ -6,15 +6,6 @@ import React, {
   useState,
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
-import MyHeader from "./MyHeader";
-import MyButton from "./MyButton";
-
-import IconItem from "./IconItem";
-import { DiaryDispatchContext } from "../App";
-import { getStringDate } from "../util/date";
-import { iconList } from "../util/icon";
-
 /* Firebase - imageUpload */
 import {
   deleteObject,
@@ -25,6 +16,13 @@ import {
   uploadBytesResumable,
   uploadString,
 } from "firebase/storage";
+import MyHeader from "./MyHeader";
+import MyButton from "./MyButton";
+import IconItem from "./IconItem";
+import { DiaryDispatchContext } from "../App";
+import { getStringDate } from "../util/date";
+import { iconList } from "../util/icon";
+import { GrDuplicate } from "react-icons/gr";
 import { v4 as uuidv4 } from "uuid"; // 랜덤 식별자를 생성해주는 라이브러리
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
@@ -35,10 +33,13 @@ const DiaryEditor = ({ isEdit, originData }) => {
   const contentRef = useRef();
   const [content, setContent] = useState("");
   const [per, setPerc] = useState(null);
-
+  // 파일 저장 배열
+  const [files, setFiles] = useState([]);
+  const [icon, setIcon] = useState(parseInt(id));
+  const [date, setDate] = useState(getStringDate(new Date()));
   //닉네임
-  const session = window.sessionStorage;
   const [userName, setUserName] = useState();
+  const session = window.sessionStorage;
 
   const fnc = (async () => {
     const docRef = doc(db, "users", session.getItem("user_id"));
@@ -46,14 +47,7 @@ const DiaryEditor = ({ isEdit, originData }) => {
     setUserName(docSnap.data().displayName);
   })();
 
-  // 파일 저장 배열
-  const [files, setFiles] = useState([]);
-
   const { id } = useParams();
-
-  const [icon, setIcon] = useState(parseInt(id));
-  const [date, setDate] = useState(getStringDate(new Date()));
-
   const { onCreate, onEdit, onRemove } = useContext(DiaryDispatchContext);
   const handleClickIcon = useCallback((icon) => {
     setIcon(icon);
@@ -67,7 +61,6 @@ const DiaryEditor = ({ isEdit, originData }) => {
       contentRef.current.focus();
       return;
     }
-
     if (
       window.confirm(
         isEdit ? "일기를 수정하시겠습니까?" : "새로운 일기를 작성하시겠습니까?"
@@ -92,7 +85,6 @@ const DiaryEditor = ({ isEdit, originData }) => {
         );
       }
     }
-
     navigate("/mypage", { replace: true });
   };
 
@@ -114,79 +106,11 @@ const DiaryEditor = ({ isEdit, originData }) => {
   }, [isEdit, originData]);
 
   const storage = getStorage();
-  const [attachment, setAttachment] = useState([]);
-
-  // 파일 등록
-  const onFileChange = (e) => {
-    // 업로드 된 file
-    const files = e.target.files;
-    const theFile = files[0];
-
-    // FileReader 생성
-    const reader = new FileReader();
-
-    // file 업로드가 완료되면 실행
-    reader.onloadend = (finishedEvent) => {
-      // 업로드한 이미지 URL 저장
-      const result = finishedEvent.currentTarget.result;
-      setAttachment(result);
-    };
-    // 파일 정보를 읽기
-    reader.readAsDataURL(theFile);
-  };
-
-  //선택된 파일 삭제
-  const onClearAttachment = () => setAttachment(null);
-
-  //파일 전송
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    const storage = getStorage();
-    const fileRef = ref(storage, uuidv4());
-    const response = await uploadString(fileRef, attachment, "data_url");
-    console.log(response);
-
-    // 파일 업로드 진행률 모니터링
-    const storageRef = ref(storage, uuidv4());
-
-    const uploadTask = uploadBytesResumable(storageRef, files);
-
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
-        setPerc(progress);
-        switch (snapshot.state) {
-          case "paused":
-            console.log("Upload is paused");
-            break;
-          case "running":
-            console.log("Upload is running");
-            break;
-        }
-      },
-      (error) => {
-        console.log(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log("File available at", downloadURL);
-        });
-      }
-    );
-
-    // 파일 URL
-    const fileURL = await getDownloadURL(ref(storage, fileRef));
-    setFiles([...files, fileURL], alert("등록완료!"));
-    //console.log(fileURL);
-  };
 
   // 등록된 파일 삭제
   const onDelete = () => {
     const desertRef = ref(storage, files[0]);
-    //Delete the file
+
     deleteObject(desertRef)
       .then(() => {
         files.length = 0;
@@ -244,63 +168,26 @@ const DiaryEditor = ({ isEdit, originData }) => {
             />
           </div>
           <h4>나의 그림</h4>
-          <form onSubmit={onSubmit}>
-            <input
-              type="file"
-              accept="images/*"
-              onChange={onFileChange}
-              style={{
-                fontSize: "20px",
-                fontWeight: "bold",
-                color: "#666",
-                border: "1px solid #000",
-                borderRadius: "3px",
-                marginBottom: "30px",
-              }}
-            />
-            {attachment && (
-              <div
-                style={{
-                  display: "contents",
-                  marginRight: "10px",
-                }}
+          <div className="diary_file_wrapper">
+            <div className="formInput">
+              <label
+                htmlFor="file"
+                style={{ position: "absolute", marginLeft: "20px" }}
               >
-                <button
-                  onClick={onClearAttachment}
-                  style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    background: "#f4f1cf",
-                    marginRight: "5px",
-                  }}
-                >
-                  삭제
-                </button>
-                <input
-                  type="submit"
-                  value="등록"
-                  style={{
-                    fontSize: "20px",
-                    background: "#111",
-                    color: "#fff",
-                    marginBottom: "30px",
-                  }}
-                  onChange={(e) => setFiles(e.target.files)}
-                />
-                <h5 style={{ fontWeight: "bold" }}>❗파일을 등록해주세요.</h5>
-                <br />
-                <img
-                  src={attachment}
-                  width="50%"
-                  alt=""
-                  disabled={per != null && per < 100}
-                  className="attachment"
-                />
+                <GrDuplicate className="icon" style={{ scale: "2" }} />
+              </label>
+              <input
+                type="file"
+                id="file"
+                onChange={(e) => setFiles(e.target.files[0])}
+                style={{ display: "none" }}
+              />
+              <div className="art_item">
+                <img src={""} className="art_img" />
               </div>
-            )}
-          </form>
-          {/* <div>파일명 : </div> */}
-          <button onClick={onDelete}>등록된 이미지 삭제</button>
+            </div>
+          </div>
+          <button onClick={onDelete}>삭제</button>
         </section>
 
         <section>
