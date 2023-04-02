@@ -1,3 +1,8 @@
+
+![thumbnail](https://user-images.githubusercontent.com/121434627/229338168-0609e45a-3e42-4f93-a169-f24043b66ae2.png)
+
+https://soso-diary-project.web.app/
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
