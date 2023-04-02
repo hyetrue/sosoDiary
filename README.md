@@ -1,7 +1,7 @@
 
 ![thumbnail](https://user-images.githubusercontent.com/121434627/229338168-0609e45a-3e42-4f93-a169-f24043b66ae2.png)
 
-[sosoDiaryProject](https://soso-diary-project.web.app/){: target="_blank"} [소소일기 바로가기](https://soso-diary-project.web.app/){: target="_blank"}
+[소소일기 바로가기] (https://soso-diary-project.web.app/)
 
 
 # Getting Started with Create React App
