@@ -1,0 +1,42 @@
+.cursor {
+  width: 40px;
+  height: 40px;
+  border: 1.7px solid #fefefe;
+  border-radius: 100%;
+  position: fixed;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  transition: all 0.6s ease;
+  transition-property: opacity, background-color, transform, mix-blend-mode;
+}
+.onClick {
+  transform: translate(-50%, -50%) scale(0.5);
+  background-color: #d4d4d4;
+  filter: blur(3px);
+}
+.offClick {
+  /* transform: translate(-50%, -50%) scale(0.9);
+  background-color: #d4d4d4;
+  filter: blur(0px); */
+}
+.mouse_hover {
+  transform: translate(-50%, -50%) scale(1.25);
+  background-color: #fefefe;
+}
+/* .mouse {
+  background-color: unset;
+} */
+.show {
+  opacity: 1;
+}
+.hide {
+  opacity: 0;
+}
+
+@media screen and (max-width: 1024px) {
+  .cursor {
+    display: none;
+  }
+}
