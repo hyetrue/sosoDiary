@@ -1,27 +1,27 @@
 @font-face {
-  font-family: "Garam";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/naverfont_04@1.0/Garam.woff")
-    format("woff");
+  font-family: 'Garam';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/naverfont_04@1.0/Garam.woff')
+    format('woff');
   font-weight: normal;
   font-style: normal;
 }
-@import url("https://fonts.googleapis.com/css2?family=Dongle&family=Stylish&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Dongle&family=Stylish&display=swap');
 
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500&family=Sunflower:wght@300;500&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500&family=Sunflower:wght@300;500&display=swap');
 
 @font-face {
-  font-family: "SCDream2";
-  src: url("/public/assets/SCDream2.otf") format("truetype");
+  font-family: 'SCDream2';
+  src: url('/public/assets/SCDream2.otf') format('truetype');
 }
 
 @font-face {
-  font-family: "SCDream3";
-  src: url("/public/assets/SCDream3.otf") format("truetype");
+  font-family: 'SCDream3';
+  src: url('/public/assets/SCDream3.otf') format('truetype');
 }
 
 @font-face {
-  font-family: "SCDream4";
-  src: url("/public/assets/SCDream4.otf") format("truetype");
+  font-family: 'SCDream4';
+  src: url('/public/assets/SCDream4.otf') format('truetype');
 }
 
 * {
@@ -30,7 +30,7 @@
 
 @media (min-width: 650px) {
   body {
-    font-family: "Garam";
+    font-family: 'Garam';
     background-color: #fff !important;
     display: flex;
     justify-content: center;
@@ -43,7 +43,7 @@
 
 @media (max-width: 600px) {
   body {
-    font-family: "Garam";
+    font-family: 'Garam';
     background-color: #fff !important;
     display: block;
 
@@ -66,7 +66,7 @@
   position: -webkit-sticky;
   position: sticky;
   top: 0;
-  font-family: "Garam";
+  font-family: 'Garam';
   font-weight: bold;
   font-size: 18px;
   border-radius: 5px;
@@ -115,7 +115,7 @@
 
 @media (min-width: 600px) {
   .App {
-    font-family: "Garam";
+    font-family: 'Garam';
     padding: 20px;
     background-color: #efefef;
     border-radius: 30px 0 0 30px;
@@ -128,7 +128,7 @@
 
 @media (max-width: 600px) {
   .App {
-    font-family: "Garam";
+    font-family: 'Garam';
     padding: 20px;
     background-color: #efefef;
     border-radius: 30px 0 0 0;
@@ -140,7 +140,7 @@
 }
 
 .contents {
-  font-family: "Garam";
+  font-family: 'Garam';
   background-color: #fff;
 }
 
@@ -238,7 +238,7 @@
   padding-left: 30px;
   padding-right: 30px;
 
-  font-family: "Stylish";
+  font-family: 'Stylish';
   font-size: 20px;
 
   white-space: nowrap;
@@ -320,14 +320,14 @@ header .head_btn_left {
 }
 
 header .head_btn_left button {
-  font-family: "Stylish";
+  font-family: 'Stylish';
   font-size: 16px;
   border: 1px solid #666;
   background-color: #f4f1cf;
 }
 
 header .head_btn_left2 button {
-  font-family: "Stylish";
+  font-family: 'Stylish';
   font-size: 16px;
   border: 1px solid #666;
   background-color: #ededed;
@@ -339,14 +339,14 @@ header .head_btn_right {
 }
 
 header .head_btn_right button {
-  font-family: "Stylish";
+  font-family: 'Stylish';
   font-size: 16px;
   border: 1px solid #666;
   background-color: #f4f1cf;
 }
 
 header button {
-  font-family: "Garam";
+  font-family: 'Garam';
 }
 
 .navbar-brand {
@@ -784,7 +784,7 @@ header button {
 /* Home */
 #motion-box {
   offset-path: path(
-    "M32.6,187.9c0,0,155-109.5,282.8-73.3S208.9,325.4,57.2,268.8"
+    'M32.6,187.9c0,0,155-109.5,282.8-73.3S208.9,325.4,57.2,268.8'
   );
   animation: move 6000ms infinite alternate ease-in-out;
   width: 20px;
@@ -880,7 +880,7 @@ header button {
   width: 120px;
   height: 8px;
   border-radius: 50%;
-  content: "";
+  content: '';
   background: rgba(0, 0, 0, 0.1);
   position: absolute;
   bottom: -2px;
@@ -1004,4 +1004,10 @@ header button {
 
 .login-nav-on {
   display: block !important;
+}
+
+.dropdown-toggle.nav-link {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 10px;
 }

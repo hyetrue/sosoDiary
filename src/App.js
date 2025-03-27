@@ -1,5 +1,5 @@
-import "./App.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {
   BrowserRouter,
@@ -8,36 +8,46 @@ import {
   Route,
   Routes,
   useNavigate,
-} from "react-router-dom";
+} from 'react-router-dom';
 
-import Home from "./pages/Home";
-import MyPage from "./pages/MyPage";
-import New from "./pages/New";
-import Edit from "./pages/Edit";
-import Diary from "./pages/Diary";
-import Login from "./pages/login/Login";
-import Join from "./pages/join/Join";
-import React, { useContext, useEffect, useReducer, useRef } from "react";
-import { AuthContext } from "./context/AuthContext";
-import { userInputs } from "./pages/join/userInputs";
-import Navigation from "./components/Navigation";
-import BackParticle from "./components/background/BackParticle";
+import Home from './pages/Home';
+import MyPage from './pages/MyPage';
+import New from './pages/New';
+import Edit from './pages/Edit';
+import Diary from './pages/Diary';
+import Login from './pages/login/Login';
+import Join from './pages/join/Join';
+import React, { useContext, useEffect, useReducer, useRef } from 'react';
+import { AuthContext } from './context/AuthContext';
+import { userInputs } from './pages/join/userInputs';
+import Navigation from './components/Navigation';
+import BackParticle from './components/background/BackParticle';
+import { db } from './firebase';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  updateDoc,
+  getDocs,
+} from 'firebase/firestore';
+import { type } from '@testing-library/user-event/dist/type';
 
 const reducer = (state, action) => {
   let newState = [];
   switch (action.type) {
-    case "INIT": {
+    case 'INIT': {
       return action.data;
     }
-    case "CREATE": {
+    case 'CREATE': {
       newState = [action.data, ...state];
       break;
     }
-    case "REMOVE": {
+    case 'REMOVE': {
       newState = state.filter((it) => it.id !== action.targetId);
       break;
     }
-    case "EDIT": {
+    case 'EDIT': {
       newState = state.map((it) =>
         it.id === action.data.id ? { ...action.data } : it
       );
@@ -46,7 +56,7 @@ const reducer = (state, action) => {
     default:
       return state;
   }
-  localStorage.setItem("diary", JSON.stringify(newState));
+  // localStorage.setItem("diary", JSON.stringify(newState));
   return newState;
 };
 
@@ -58,7 +68,7 @@ function App({ isLoggedIn, Cursor }) {
   let session = window.sessionStorage;
 
   const RequireAuth = ({ children }) => {
-    return currentUser ? children : <Navigate to="/login" />;
+    return currentUser ? children : <Navigate to='/login' />;
   };
 
   // console.log(currentUser);
@@ -66,14 +76,14 @@ function App({ isLoggedIn, Cursor }) {
   const [data, dispatch] = useReducer(reducer, []);
 
   useEffect(() => {
-    const localData = localStorage.getItem("diary");
+    const localData = localStorage.getItem('diary');
     if (localData) {
       const diaryList = JSON.parse(localData).sort(
         (a, b) => parseInt(b.id) - parseInt(a.id)
       );
       if (diaryList.length >= 1) {
         dataId.current = parseInt(diaryList[0].id) + 1;
-        dispatch({ type: "INIT", data: diaryList });
+        dispatch({ type: 'INIT', data: diaryList });
       }
     }
   }, []);
@@ -81,38 +91,53 @@ function App({ isLoggedIn, Cursor }) {
   const dataId = useRef(0);
 
   //CREATE
-  const onCreate = (date, content, files, icon, user_id) => {
-    dispatch({
-      type: "CREATE",
-      data: {
-        id: dataId.current,
-        date: new Date(date).getTime(),
-        content,
-        files,
-        icon,
-        user_id: user_id,
-      },
-    });
+  const onCreate = async (date, content, files, icon, user_id) => {
+    const newDiary = {
+      id: dataId.current,
+      date: new Date(date).getTime(),
+      content,
+      files,
+      icon,
+      user_id,
+    };
+    await addDoc(collection(db, 'diaries'), newDiary);
+    dispatch({ type: 'CREATE', data: newDiary });
     dataId.current += 1;
   };
+
   //REMOVE
-  const onRemove = (targetId) => {
-    dispatch({ type: "REMOVE", targetId });
+  const onRemove = async (targetId) => {
+    await deleteDoc(doc(db, 'diaries', targetId.toString()));
+    dispatch({ type: 'REMOVE', targetId });
   };
   //EDIT
-  const onEdit = (targetId, date, content, files, icon, user_id) => {
-    dispatch({
-      type: "EDIT",
-      data: {
-        id: targetId,
-        date: new Date(date).getTime(),
-        content,
-        files,
-        icon,
-        user_id: user_id,
-      },
-    });
+  const onEdit = async (targetId, date, content, files, icon, user_id) => {
+    const updatedDiary = {
+      id: targetId,
+      date: new Date(date).getTime(),
+      content,
+      files,
+      icon,
+      user_id,
+    };
+    await updateDoc(doc(db, 'diaries', targetId.toString()), updatedDiary);
+    dispatch({ type: 'EDIT', data: updatedDiary });
   };
+
+  useEffect(() => {
+    const fetchDiaries = async () => {
+      const querySnapshot = await getDocs(collection(db, 'diaries'));
+      const diaryList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      if (diaryList.length >= 1) {
+        dataId.current = parseInt(diaryList[0].id) + 1;
+        dispatch({ type: 'INIT', data: diaryList });
+      }
+    };
+    fetchDiaries();
+  }, []);
 
   return (
     <DiaryStateContext.Provider value={data}>
@@ -120,14 +145,14 @@ function App({ isLoggedIn, Cursor }) {
         <BrowserRouter>
           <Navigation />
 
-          <div className="App">
-            <div className="site">
-              <div className="circle circle1"></div>
-              <div className="circle circle2"></div>
+          <div className='App'>
+            <div className='site'>
+              <div className='circle circle1'></div>
+              <div className='circle circle2'></div>
             </div>
             <Routes>
               <Route
-                path="/mypage"
+                path='/mypage'
                 element={
                   <RequireAuth>
                     <MyPage Cursor={Cursor} />
@@ -135,7 +160,7 @@ function App({ isLoggedIn, Cursor }) {
                 }
               />
               <Route
-                path="/new/:theme/:id"
+                path='/new/:theme/:id'
                 element={
                   <RequireAuth>
                     <New Cursor={Cursor} />
@@ -143,7 +168,7 @@ function App({ isLoggedIn, Cursor }) {
                 }
               />
               <Route
-                path="/edit/:id"
+                path='/edit/:id'
                 element={
                   <RequireAuth>
                     <Edit Cursor={Cursor} />
@@ -151,7 +176,7 @@ function App({ isLoggedIn, Cursor }) {
                 }
               />
               <Route
-                path="/diary/:id"
+                path='/diary/:id'
                 element={
                   <RequireAuth>
                     <Diary Cursor={Cursor} />
@@ -160,13 +185,13 @@ function App({ isLoggedIn, Cursor }) {
               />
 
               <Route
-                path="/join"
-                element={<Join inputs={userInputs} title="Add New User" />}
+                path='/join'
+                element={<Join inputs={userInputs} title='Add New User' />}
               />
 
-              <Route path="/login" element={<Login />} />
+              <Route path='/login' element={<Login />} />
               <Route
-                path="/"
+                path='/'
                 element={
                   <RequireAuth>
                     <Home Cursor={Cursor} />
@@ -177,11 +202,10 @@ function App({ isLoggedIn, Cursor }) {
           </div>
           <footer
             style={{
-              textAlign: "center",
-              margin: "20px 0 50px 0",
-              color: "#000",
-            }}
-          >
+              textAlign: 'center',
+              margin: '20px 0 50px 0',
+              color: '#000',
+            }}>
             Powered by HJ🚀
           </footer>
         </BrowserRouter>
