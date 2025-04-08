@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import React from 'react';
 import ing from './../pages/images/ing.png';
 
-const LatestItem = ({ id, files, date, content }) => {
+const LatestItem = ({ id, files, date }) => {
   const navigate = useNavigate();
 
   const srtDate = new Date(parseInt(date)).toLocaleDateString();
@@ -14,24 +13,15 @@ const LatestItem = ({ id, files, date, content }) => {
   return (
     <div className='recent-box'>
       <div className='list_item' onClick={goDetail}>
-        <img
-          className='list_img'
-          src={
-            files && files[0]
-              ? files[0]
-              : process.env.PUBLIC_URL + '/assets/default-diary.png'
-          }
-          alt='데이터 이미지'
-        />
+        <img className='list_img' src={ing} />
+        {/* <img
+          className="list_img"
+          src={files ? URL.createObjectURL(files) : "null"}
+        /> */}
       </div>
-      <div className='latest-info'>
-        <div className='latest-date'>{srtDate}</div>
-        <div className='latest-content'>
-          {content && content.slice(0, 30)}...
-        </div>
-      </div>
+      <div className='list_text'>{srtDate}</div>
     </div>
   );
 };
 
-export default React.memo(LatestItem);
+export default LatestItem;

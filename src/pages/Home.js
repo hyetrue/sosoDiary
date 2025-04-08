@@ -16,14 +16,6 @@ import { db } from '../firebase';
 import { motion } from 'framer-motion';
 import LatestItem from '../components/LatestItem';
 
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper';
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import Diary from './Diary';
-
 const Home = ({ Cursor }) => {
   const latestList = useContext(DiaryStateContext);
 
@@ -67,16 +59,6 @@ const Home = ({ Cursor }) => {
     }
   }, [latestList, curDate]);
 
-  //최근 데이터 3개만 필터링
-  const getLatestDiaries = () => {
-    if (!latestList || latestList.length === 0) return [];
-
-    return latestList
-      .filter((it) => it.user_id === session.getItem('user_id'))
-      .sort((a, b) => parseInt(b.date) - parseInt(a.date))
-      .slice(0, 3);
-  };
-
   return (
     <div className='main_container'>
       <Cursor />
@@ -91,31 +73,6 @@ const Home = ({ Cursor }) => {
           {userName}
         </span>{' '}
         님의 소소했던 오늘 하루를 기록해 보세요.
-      </div>
-
-      {/* 최근 데이터 슬라이더 추가 */}
-      <div className='latest-diary-section'>
-        <h3>최근 일기</h3>
-        <Swiper
-          modules={[Navigation, Pagination]}
-          spaceBetween={30}
-          slidesPerView={1}
-          navigation
-          pagination={{ clickable: true }}
-          breakpoints={{
-            768: {
-              slidesPerView: 2,
-            },
-            1024: {
-              slidesPerView: 3,
-            },
-          }}>
-          {getLatestDiaries().map((diary) => (
-            <SwiperSlide key={diary.id}>
-              <LatestItem {...diary} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
       </div>
       <div id='motion-box'></div>
       <div className='img_btn'>
