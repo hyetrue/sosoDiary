@@ -1011,3 +1011,79 @@ header button {
   justify-content: flex-end;
   margin-right: 10px;
 }
+
+/* 최근 일기 섹션 스타일 */
+.latest-diary-section {
+  margin: 40px 0;
+  padding: 20px;
+}
+
+.latest-diary-section h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+/* 최근 일기 아이템 스타일 */
+.latest-item {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.latest-item:hover {
+  transform: translateY(-5px);
+}
+
+.latest-img-wrapper {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.latest-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.latest-info {
+  padding: 15px;
+}
+
+.latest-date {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.latest-content {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.4;
+}
+
+/* Swiper 커스텀 스타일 */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #eaa60d !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #eaa60d !important;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .latest-diary-section {
+    padding: 10px;
+  }
+
+  .latest-img-wrapper {
+    height: 150px;
+  }
+}
