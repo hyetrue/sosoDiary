@@ -22,15 +22,16 @@ import { AuthContext } from './context/AuthContext';
 import { userInputs } from './pages/join/userInputs';
 import Navigation from './components/Navigation';
 import BackParticle from './components/background/BackParticle';
-import { db } from './firebase';
 import {
-  addDoc,
-  collection,
-  deleteDoc,
   doc,
-  updateDoc,
+  setDoc,
+  deleteDoc,
+  collection,
   getDocs,
+  query,
+  orderBy,
 } from 'firebase/firestore';
+import { db } from './firebase';
 import { type } from '@testing-library/user-event/dist/type';
 
 const reducer = (state, action) => {
@@ -56,7 +57,6 @@ const reducer = (state, action) => {
     default:
       return state;
   }
-  // localStorage.setItem("diary", JSON.stringify(newState));
   return newState;
 };
 
@@ -76,16 +76,23 @@ function App({ isLoggedIn, Cursor }) {
   const [data, dispatch] = useReducer(reducer, []);
 
   useEffect(() => {
-    const localData = localStorage.getItem('diary');
-    if (localData) {
-      const diaryList = JSON.parse(localData).sort(
-        (a, b) => parseInt(b.id) - parseInt(a.id)
-      );
+    const fetchDiaries = async () => {
+      const diariesRef = collection(db, 'diaries'); // diaries 컬렉션 참조
+      const q = query(diariesRef, orderBy('date', 'desc')); // 날짜 기준 내림차순 정렬
+      const querySnapshot = await getDocs(q); // 쿼리 실행
+      const diaryList = [];
+      querySnapshot.forEach((doc) => {
+        diaryList.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
       if (diaryList.length >= 1) {
         dataId.current = parseInt(diaryList[0].id) + 1;
         dispatch({ type: 'INIT', data: diaryList });
       }
-    }
+    };
+    fetchDiaries();
   }, []);
 
   const dataId = useRef(0);
@@ -98,18 +105,26 @@ function App({ isLoggedIn, Cursor }) {
       content,
       files,
       icon,
-      user_id,
+      user_id: user_id,
     };
-    await addDoc(collection(db, 'diaries'), newDiary);
-    dispatch({ type: 'CREATE', data: newDiary });
+
+    //Firestore에 저장
+    await setDoc(doc(db, 'diaries', String(dataId.current)), newDiary);
+
+    dispatch({
+      type: 'CREATE',
+      data: newDiary,
+    });
     dataId.current += 1;
   };
 
   //REMOVE
   const onRemove = async (targetId) => {
-    await deleteDoc(doc(db, 'diaries', targetId.toString()));
+    //Firestore에서 삭제
+    await deleteDoc(doc(db, 'diaries', String(targetId)));
     dispatch({ type: 'REMOVE', targetId });
   };
+
   //EDIT
   const onEdit = async (targetId, date, content, files, icon, user_id) => {
     const updatedDiary = {
@@ -118,26 +133,17 @@ function App({ isLoggedIn, Cursor }) {
       content,
       files,
       icon,
-      user_id,
+      user_id: user_id,
     };
-    await updateDoc(doc(db, 'diaries', targetId.toString()), updatedDiary);
-    dispatch({ type: 'EDIT', data: updatedDiary });
-  };
 
-  useEffect(() => {
-    const fetchDiaries = async () => {
-      const querySnapshot = await getDocs(collection(db, 'diaries'));
-      const diaryList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      if (diaryList.length >= 1) {
-        dataId.current = parseInt(diaryList[0].id) + 1;
-        dispatch({ type: 'INIT', data: diaryList });
-      }
-    };
-    fetchDiaries();
-  }, []);
+    //Firestore에서 업데이트
+    await setDoc(doc(db, 'diaries', String(targetId)), updatedDiary);
+
+    dispatch({
+      type: 'EDIT',
+      data: updatedDiary,
+    });
+  };
 
   return (
     <DiaryStateContext.Provider value={data}>

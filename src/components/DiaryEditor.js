@@ -141,46 +141,33 @@ const DiaryEditor = ({ isEdit, originData }) => {
   //파일 전송
   const onSubmit = async (e) => {
     e.preventDefault();
-    const storage = getStorage();
-    const fileRef = ref(storage, uuidv4());
-    const response = await uploadString(fileRef, attachment, 'data_url');
-    console.log(response);
 
-    // 파일 업로드 진행률 모니터링
-    const storageRef = ref(storage, uuidv4());
+    if (!attachment) {
+      alert('파일을 선택해주세요.');
+      return;
+    }
 
-    const uploadTask = uploadBytesResumable(storageRef, files);
+    try {
+      const storage = getStorage();
+      //사용자 ID와 타임스탬프를 파일명에 포함시켜 고유성 보장
+      const fileName = `${session.getItem(
+        'user_id'
+      )}_${Date.now()}_${uuidv4()}`;
+      const fileRef = ref(storage, `diary_images/${fileName}`);
 
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
-        setPerc(progress);
-        switch (snapshot.state) {
-          case 'paused':
-            console.log('Upload is paused');
-            break;
-          case 'running':
-            console.log('Upload is running');
-            break;
-        }
-      },
-      (error) => {
-        console.log(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log('File available at', downloadURL);
-        });
-      }
-    );
+      //첫 번째 업로드
+      const response = await uploadString(fileRef, attachment, 'data_url');
+      console.log('파일 업로드 성공', response);
 
-    // 파일 URL
-    const fileURL = await getDownloadURL(ref(storage, fileRef));
-    setFiles([...files, fileURL], alert('등록완료!'));
-    //console.log(fileURL);
+      //파일 URL 가져오기
+      const fileURL = await getDownloadURL(fileRef);
+      setFiles([...files, fileURL]);
+      alert('등록완료!');
+      setAttachment(null);
+    } catch (error) {
+      console.log('업로드 파일 오류:', error);
+      alert('파일 업로드 중 오류가 발생했습니다.');
+    }
   };
 
   // 등록된 파일 삭제
