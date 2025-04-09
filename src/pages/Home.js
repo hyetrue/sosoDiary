@@ -61,9 +61,11 @@ const Home = ({ Cursor }) => {
         59
       ).getTime();
 
-      setData(
-        latestList.filter((it) => firstDay <= it.date && it.date <= lastDay)
+      const filteredData = latestList.filter(
+        (it) => firstDay <= it.date && it.date <= lastDay
       );
+      console.log('Filtered Data:', filteredData);
+      setData(filteredData);
     }
   }, [latestList, curDate]);
 
@@ -133,8 +135,7 @@ const Home = ({ Cursor }) => {
         </Link>
       </div>
 
-      <div
-        style={{ fontSize: '36px', textAlign: 'center', marginBottom: '60px' }}>
+      <div>
         <div className='man'>
           <div className='head'></div>
           <div className='body'></div>
@@ -142,18 +143,22 @@ const Home = ({ Cursor }) => {
             <div className='foot'></div>
             <div className='foot'></div>
           </div>
-        </div>{' '}
-        --- ⚠️작업중입니다👷 ---{' '}
+        </div>
       </div>
 
       <div className='top_title'>
-        최근 일기 LIST -- 준비중{' '}
+        지난번 일기{' '}
+        {data.length > 0 && (
+          <span style={{ color: '#666', fontSize: '0.9em' }}>
+            ({new Date(parseInt(data[0].date)).toLocaleDateString()})
+          </span>
+        )}{' '}
         <Link to='/mypage'>
           <CiSquareChevRight />
         </Link>
       </div>
       <div className='recent-list'>
-        <LatestItem latestList={data} />
+        {data.length > 0 && <LatestItem latestList={data} />}
       </div>
     </div>
   );

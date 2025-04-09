@@ -175,7 +175,6 @@
   text-align: center;
   font-size: 28px;
   margin-bottom: 20px;
-  margin-top: 50px;
 }
 
 @media (max-width: 1000px) {
@@ -745,6 +744,7 @@ header button {
   height: 200px;
   margin: 8px;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .list_img {
