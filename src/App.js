@@ -148,7 +148,8 @@ function App({ isLoggedIn, Cursor }) {
   return (
     <DiaryStateContext.Provider value={data}>
       <DiaryDispatchContext.Provider value={{ onCreate, onEdit, onRemove }}>
-        <BrowserRouter>
+        <BrowserRouter
+          future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
           <Navigation />
 
           <div className='App'>

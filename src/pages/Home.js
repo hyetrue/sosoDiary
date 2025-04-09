@@ -25,11 +25,19 @@ const Home = ({ Cursor }) => {
 
   const session = window.sessionStorage;
 
-  const userinfo = (async () => {
-    const docRef = doc(db, 'users', session.getItem('user_id'));
-    const docSnap = await getDoc(docRef);
-    setUserName(docSnap.data().displayName);
-  })();
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const userId = session.getItem('user_id');
+      if (userId) {
+        const docRef = doc(db, 'users', userId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setUserName(docSnap.data().displayName);
+        }
+      }
+    };
+    fetchUserInfo();
+  }, []);
 
   useEffect(() => {
     const titleElement = document.getElementsByTagName('title')[0];
