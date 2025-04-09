@@ -61,7 +61,11 @@ const Home = ({ Cursor }) => {
         59
       ).getTime();
 
-      const filteredData = latestList.filter(
+      const userFilteredList = latestList.filter(
+        (item) => item.user_id === session.getItem('user_id')
+      );
+
+      const filteredData = userFilteredList.filter(
         (it) => firstDay <= it.date && it.date <= lastDay
       );
       console.log('Filtered Data:', filteredData);

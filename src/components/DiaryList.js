@@ -73,7 +73,7 @@ const DiaryList = ({ diaryList = [] }) => {
 
     const copyList = JSON.parse(JSON.stringify(diaryList));
 
-    // user_id로 먼저 필터링
+    // 로그인한 사용자의 일기만 필터링
     const userFilteredList = copyList.filter(
       (item) => item.user_id === user_id
     );
@@ -84,7 +84,7 @@ const DiaryList = ({ diaryList = [] }) => {
         ? userFilteredList
         : userFilteredList.filter((it) => filterCallBack(it));
 
-    // 정렬
+    // 정렬 (기본값을 latest로 설정)
     const sortedList = filteredList.sort(compare);
     return sortedList;
   };
@@ -114,10 +114,9 @@ const DiaryList = ({ diaryList = [] }) => {
         </div>
       </div>
 
-      {getProcessedDiaryList().map((it, index) => {
-        if (user_id !== it.user_id) return null;
-        return <DiaryItem key={`${it.id}-${it.user_id}-${index}`} {...it} />;
-      })}
+      {getProcessedDiaryList().map((it) => (
+        <DiaryItem key={`${it.id}-${it.user_id}`} {...it} />
+      ))}
     </div>
   );
 };
