@@ -1,14 +1,14 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { DiaryStateContext } from "../App";
-import "./../App.css";
+import { useContext, useEffect, useRef, useState } from 'react';
+import { DiaryStateContext } from '../App';
+import './../App.css';
 
 //COMPONENTS
-import MyButton from "./../components/MyButton";
-import MyHeader from "./../components/MyHeader";
-import DiaryList from "./../components/DiaryList";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase";
-import noProfile from "./../pages/images/profileUndefined.png";
+import MyButton from './../components/MyButton';
+import MyHeader from './../components/MyHeader';
+import DiaryList from './../components/DiaryList';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase';
+import noProfile from './../pages/images/profileUndefined.png';
 
 const MyPage = ({ Cursor }) => {
   const diaryList = useContext(DiaryStateContext);
@@ -22,16 +22,25 @@ const MyPage = ({ Cursor }) => {
 
   const session = window.sessionStorage;
 
-  const userinfo = (async () => {
-    const docRef = doc(db, "users", session.getItem("user_id"));
-    const docSnap = await getDoc(docRef);
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const docRef = doc(db, 'users', session.getItem('user_id'));
+        const docSnap = await getDoc(docRef);
 
-    const A = docSnap.data().img ?? noProfile;
-    setFiles(A);
-    //setFiles(docSnap.data().img);
-    setUserName(docSnap.data().displayName);
-  })();
-  //console.log(files);
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          setFiles(userData.img || noProfile);
+          setUserName(userData.displayName);
+        }
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+        setFiles(noProfile);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   useEffect(() => {
     if (diaryList.length >= 1) {
@@ -69,30 +78,29 @@ const MyPage = ({ Cursor }) => {
   };
 
   return (
-    <div className="contents">
+    <div className='contents'>
       <Cursor />
 
       <div>
         <MyHeader
           headText={headText}
-          leftChild={<MyButton text={"<"} onClick={decreaseMonth} />}
-          rightChild={<MyButton text={">"} onClick={increaseMonth} />}
+          leftChild={<MyButton text={'<'} onClick={decreaseMonth} />}
+          rightChild={<MyButton text={'>'} onClick={increaseMonth} />}
         />
-        <div style={{ display: "flex" }}>
-          <div style={{ display: "flex" }}>
-            <img src={files} className="userProfile" />
+        <div style={{ display: 'flex' }}>
+          <div style={{ display: 'flex' }}>
+            <img src={files} className='userProfile' />
           </div>
-          <div style={{ display: "flex", padding: "10px 0 0 10px" }}>
+          <div style={{ display: 'flex', padding: '10px 0 0 10px' }}>
             <div>
               <span
                 style={{
-                  fontFamily: "SCDream4",
-                  fontSize: "16px",
-                  color: "#084298",
-                }}
-              >
+                  fontFamily: 'SCDream4',
+                  fontSize: '16px',
+                  color: '#084298',
+                }}>
                 {userName}📍
-              </span>{" "}
+              </span>{' '}
               <h2>나의 일기장</h2>
             </div>
           </div>
